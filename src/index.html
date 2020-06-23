@@ -16,7 +16,7 @@
 
       
 
-      <a-marker  id="talkAnimation" preset='custom' type='pattern'  url='assets/pattern-1.patt' animation-mixer="clip: talk">
+      <a-marker  id="talkAnimation" preset='custom' type='pattern'  url='assets/pattern-1.patt' animation-mixer>
         
         <a-entity gltf-model="#min">
         </a-entity>
@@ -24,8 +24,36 @@
       <a-entity camera></a-entity>
     </a-scene>
     <script>
+      let Music = function() {
+        audio = new Audio();
+        audio.preload = 'auto';
+        audio.src = 'assets/voice1.mp3';
+        this.audio = audio;
+        this.play = function() {
+          audio.play();
+        }
+        this.pause = function() {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      };
+      
+      let voice = new Music();
       let talkAnimation = document.getElementById('talkAnimation');
-      talkAnimation.addEventListener("markerFound", (e)=>{ console.log('found!');});
+      talkAnimation.addEventListener("markerFound", (e)=>{
+        //console.log('found!');
+        talkAnimation.setAttribute('animation-mixer', 'clip: talk');
+        voice.play();
+      });
+      talkAnimation.addEventListener("markerLost", (e)=>{
+        //console.log('lost!');
+        voice.pause();
+      });
+      voice.audio.onended = function() {
+        console.log('voice ended');
+        talkAnimation.setAttribute('animation-mixer', 'clip: stand');
+      }
+      
     </script>
   </body>
 </html>
