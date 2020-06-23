@@ -1,8 +1,11 @@
 <html>
   <head>
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-    <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v5.0.0/dist/aframe-extras.min.js"></script>
-    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+    <script src="assets/scripts/aframe1.0.4.min.js"></script>
+    <script src="assets/scripts/aframe-extras5.0.0.min.js"></script>
+    <script src="assets/scripts/aframe-ar.js"></script>
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="icon" href="assets/favicon.ico">
+    <title>Миньон-тест</title>
   </head>
   <body>
     <a-scene embedded arjs>
@@ -13,21 +16,17 @@
         rotation="0 0 0" 
         scale="1 1 1"
       ></a-gltf-model>
-
-      
-
       <a-marker  id="talkAnimation" preset='custom' type='pattern'  url='assets/pattern-1.patt' animation-mixer>
-        
         <a-entity gltf-model="#min">
         </a-entity>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
     <script>
-      let Music = function() {
+      let Music = function(path) {
         audio = new Audio();
         audio.preload = 'auto';
-        audio.src = 'assets/voice1.mp3';
+        audio.src = path;
         this.audio = audio;
         this.play = function() {
           audio.play();
@@ -37,23 +36,47 @@
           audio.currentTime = 0;
         }
       };
-      
-      let voice = new Music();
-      let talkAnimation = document.getElementById('talkAnimation');
-      talkAnimation.addEventListener("markerFound", (e)=>{
-        //console.log('found!');
-        talkAnimation.setAttribute('animation-mixer', 'clip: talk');
-        voice.play();
-      });
-      talkAnimation.addEventListener("markerLost", (e)=>{
-        //console.log('lost!');
-        voice.pause();
-      });
-      voice.audio.onended = function() {
-        console.log('voice ended');
-        talkAnimation.setAttribute('animation-mixer', 'clip: stand');
+      let actions = {
+        animationsElement: 0,
+        activate: function() {
+          actions.animationsElement = document.getElementById('talkAnimation');
+          actions.animationTalk.activate();
+          actions.animationStand.activate();
+        },
+        animationTalk: {
+          activate: function() {
+            let elem = actions.animationsElement;
+            elem.addEventListener("markerFound", ()=>{
+              actions.animationTalk.start();
+            });
+            elem.addEventListener("markerLost", () => {
+              actions.animationTalk.stop();
+            });
+          },
+          start: function() {
+            let elem = actions.animationsElement;
+            elem.setAttribute('animation-mixer', 'clip: talk');
+            voice.play();
+          },
+          stop: function() {
+            voice.pause();
+          }
+        },
+        animationStand: {
+          activate: function() {
+            voice.audio.onended = function() {
+              
+            }
+          },
+          start: function() {
+            let elem = actions.animationsElement;
+            elem.setAttribute('animation-mixer', 'clip: stand');
+            voice.pause();
+          }
+        }
       }
-      
+      let voice = new Music('assets/minion_1/voice1.mp3');
+      actions.activate();
     </script>
   </body>
 </html>
