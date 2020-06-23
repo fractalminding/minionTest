@@ -4,3 +4,21 @@ html {
 #arjsDebugUIContainer, .a-enter-vr-button {
     display: none;
 }
+#animationControlButtons {
+    display:none;
+    margin: 0px auto;   
+}
+#animationControlButtons * {
+    display: inline-block;
+    margin: 10px 20px;
+    color:#3a28e0;
+    font-size:20px;
+    border: 2px solid #3a28e07a;
+    border-radius:15px;
+    padding:5px;
+    background-color:#ffffffcc;
+}
+#animationStand:hover, #animationTalk:hover {
+    background-color: #0010ff57;
+    user-select:none;
+}

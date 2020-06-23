@@ -8,6 +8,10 @@
     <title>Миньон-тест</title>
   </head>
   <body>
+    <div id="animationControlButtons">
+      <div id="animationTalk">Анимация Talk</div>
+      <div id="animationStand">Анимация Stand</div>
+    </div>
     <a-scene embedded arjs>
       <a-gltf-model 
         src="assets/minion_1/minion_1.gltf" 
@@ -16,7 +20,13 @@
         rotation="0 0 0" 
         scale="1 1 1"
       ></a-gltf-model>
-      <a-marker  id="talkAnimation" preset='custom' type='pattern'  url='assets/pattern-1.patt' animation-mixer>
+      <a-marker  
+        id="talkAnimation" 
+        preset='custom' 
+        type='pattern'  
+        url='assets/pattern-1.patt' 
+        animation-mixer
+      >
         <a-entity gltf-model="#min">
         </a-entity>
       </a-marker>
@@ -36,25 +46,39 @@
           audio.currentTime = 0;
         }
       };
-      let actions = {
+      let marker = {
+        activate: function() {
+          let elem = animations.animationsElement;
+          elem.addEventListener("markerFound", ()=>{
+            marker.found();
+          });
+          elem.addEventListener("markerLost", () => {
+            marker.lost();
+          });
+        },
+        found: function() {
+          animations.animationTalk.start();
+          animationControlButtons.show();
+        },
+        lost: function() {
+          animations.animationTalk.stop();
+          animationControlButtons.hide();
+        }
+      }
+      let animations = {
         animationsElement: 0,
         activate: function() {
-          actions.animationsElement = document.getElementById('talkAnimation');
-          actions.animationTalk.activate();
-          actions.animationStand.activate();
+          animations.animationsElement 
+            = document.getElementById('talkAnimation');
+          animations.animationTalk.activate();
+          animations.animationStand.activate();
         },
         animationTalk: {
           activate: function() {
-            let elem = actions.animationsElement;
-            elem.addEventListener("markerFound", ()=>{
-              actions.animationTalk.start();
-            });
-            elem.addEventListener("markerLost", () => {
-              actions.animationTalk.stop();
-            });
+
           },
           start: function() {
-            let elem = actions.animationsElement;
+            let elem = animations.animationsElement;
             elem.setAttribute('animation-mixer', 'clip: talk');
             voice.play();
           },
@@ -69,14 +93,52 @@
             }
           },
           start: function() {
-            let elem = actions.animationsElement;
+            let elem = animations.animationsElement;
             elem.setAttribute('animation-mixer', 'clip: stand');
             voice.pause();
           }
         }
       }
+      let animationControlButtons = {
+        show: function() {
+          let buttonsBlock
+            = document.getElementById('animationControlButtons');
+          buttonsBlock.style.display = 'table';
+        },
+        hide: function() {
+          let buttonsBlock
+            = document.getElementById('animationControlButtons');
+          buttonsBlock.style.display = 'none';
+        },
+        activate: function() {
+          let startAnimationTalkButton
+            = document.getElementById('animationTalk');
+          startAnimationTalkButton.onclick = function() {
+            animationControlButtons.startAnimationTalkButton.click();
+          }
+          let startAnimationStandButton
+            = document.getElementById('animationStand');
+          startAnimationStandButton.onclick = function() {
+            animationControlButtons.startAnimationStandButton.click();
+          }
+        },
+        startAnimationTalkButton: {
+          click: function() {
+            animations.animationTalk.stop();
+            animations.animationTalk.start();
+          }
+        },
+        startAnimationStandButton: {
+          click: function() {
+            animations.animationTalk.stop();
+            animations.animationStand.start();
+          }
+        }
+      }
       let voice = new Music('assets/minion_1/voice1.mp3');
-      actions.activate();
+      animations.activate();
+      marker.activate();
+      animationControlButtons.activate();
     </script>
   </body>
 </html>
