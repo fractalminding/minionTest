@@ -11,25 +11,21 @@
         id="min"
         position="0 1.25 -1" 
         rotation="0 0 0" 
-        scale="1 1 1" 
+        scale="1 1 1"
       ></a-gltf-model>
 
-      <script>
-        AFRAME.registerComponent('play-on-scan', {
-          init: function () {
-            var el = this.el;
-            el.addEventListener('markerscanned-or-something', function () {
-              el.setAttribute('animation-mixer', {clip: '*', loop: 'once'});
-            });
-          }
-        });
-      </script>
+      
 
-      <a-marker  preset='custom' type='pattern'  url='assets/pattern-1.patt'>
+      <a-marker  id="talkAnimation" preset='custom' type='pattern'  url='assets/pattern-1.patt' animation-mixer="clip: talk">
+        
         <a-entity gltf-model="#min">
         </a-entity>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
+    <script>
+      let talkAnimation = document.getElementById('talkAnimation');
+      talkAnimation.addEventListener("markerFound", (e)=>{ console.log('found!');});
+    </script>
   </body>
 </html>
